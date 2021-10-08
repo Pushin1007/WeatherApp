@@ -18,17 +18,24 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
     fun getLiveData(): LiveData<AppState> = liveData //переопределяем геттер для liveData
 
     fun getWeather() = getDataFromLocalSource()
-
+    var countTry = 10
     private fun getDataFromLocalSource() {// заглушка для получения погоды
         liveData.value = AppState.Loading
         Thread {
             Thread.sleep(1000)
 
-            try {
-                randomLoad()
-            } catch (e: Exception) {
+            // пробуем до тех пор пока не получится загрузка
+            // чтобы не попасть в бутлуп пробуем 10 раз
+            do {
+                var error = false
+                countTry--
+                try {
+                    randomLoad()
+                } catch (e: Exception) {
+                    error = true
+                }
+            } while (error && countTry >= 0)
 
-            }
 
         }.start()
     }
