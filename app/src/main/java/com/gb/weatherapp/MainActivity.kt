@@ -2,7 +2,7 @@ package com.gb.weatherapp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.gb.weatherapp.ui.main.MainFragment
+import com.gb.weatherapp.framework.ui.main.MainFragment
 
 class MainActivity : AppCompatActivity() {
 
