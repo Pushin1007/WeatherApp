@@ -5,6 +5,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.*
 import com.gb.weatherapp.AppState
+import com.gb.weatherapp.COUNT_TRY
 import com.gb.weatherapp.model.repository.Repository
 import com.google.android.material.snackbar.Snackbar
 import java.lang.NullPointerException
@@ -18,7 +19,7 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
     fun getLiveData(): LiveData<AppState> = liveData //переопределяем геттер для liveData
 
     fun getWeather() = getDataFromLocalSource()
-    var countTry = 10
+
     private fun getDataFromLocalSource() {// заглушка для получения погоды
         liveData.value = AppState.Loading
         Thread {
@@ -26,6 +27,7 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
 
             // пробуем до тех пор пока не получится загрузка
             // чтобы не попасть в бутлуп пробуем 10 раз
+            var countTry = COUNT_TRY
             do {
                 var error = false
                 countTry--
