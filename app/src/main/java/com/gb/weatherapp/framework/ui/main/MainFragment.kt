@@ -41,7 +41,7 @@ class MainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
             mainFragmentRecyclerView.adapter = adapter //
-            mainFragmentFAB.setOnClickListener { changeWeatherDataSet() }
+            mainImageButton.setOnClickListener { changeWeatherDataSet() }
             viewModel.getLiveData().observe(viewLifecycleOwner, { renderData(it) })
             viewModel.getWeatherFromLocalSourceRus()
         }
@@ -52,10 +52,10 @@ class MainFragment : Fragment() {
     private fun changeWeatherDataSet() = with(binding) {
         if (isDataSetRus) {
             viewModel.getWeatherFromLocalSourceWorld()
-            mainFragmentFAB.setImageResource(R.drawable.ic_earth)
+            mainImageButton.setImageResource(R.drawable.ic_earth)
         } else {
             viewModel.getWeatherFromLocalSourceRus()
-            mainFragmentFAB.setImageResource(R.drawable.ic_russia)
+            mainImageButton.setImageResource(R.drawable.ic_russia)
         }
         isDataSetRus = !isDataSetRus
     }
@@ -92,7 +92,7 @@ class MainFragment : Fragment() {
                 mainFragmentLoadingLayout.visibility = View.GONE
                 Snackbar
                     .make(
-                        binding.mainFragmentFAB,
+                        binding.mainImageButton,
                         getString(R.string.error),
                         Snackbar.LENGTH_INDEFINITE
                     )
