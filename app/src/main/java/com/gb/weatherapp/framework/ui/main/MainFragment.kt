@@ -43,7 +43,7 @@ class MainFragment : Fragment() {
         // на события когда мы получаем через LiveData() какой-то ивент
         val observer = Observer<AppState> { renderData(it) }
         viewModel.getLiveData().observe(viewLifecycleOwner, observer)
-        viewModel.getWeather()
+        viewModel.getWeatherFromLocalSourceRus()
     }
 
     override fun onDestroyView() {
@@ -70,7 +70,7 @@ class MainFragment : Fragment() {
                 weatherGroup.visibility = View.INVISIBLE
                 Snackbar
                     .make(mainView, "Error", Snackbar.LENGTH_INDEFINITE)
-                    .setAction("Reload") { viewModel.getWeather() }
+                    .setAction("Reload") { viewModel.getWeatherFromLocalSourceRus() }
                     .show()
             }
         }

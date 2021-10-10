@@ -1,16 +1,9 @@
 package com.gb.weatherapp.framework.ui.main
 
-import android.content.Context
-import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.*
 import com.gb.weatherapp.AppState
 import com.gb.weatherapp.COUNT_TRY
 import com.gb.weatherapp.model.repository.Repository
-import com.google.android.material.snackbar.Snackbar
-import java.lang.NullPointerException
-import java.security.acl.NotOwnerException
-import java.lang.IllegalArgumentException
 
 class MainViewModel(private val repository: Repository) : ViewModel() {
     // MutableLiveData в отличии от LiveData позволяет себя изменить и пушить в нее данные
@@ -18,9 +11,11 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
 
     fun getLiveData(): LiveData<AppState> = liveData //переопределяем геттер для liveData
 
-    fun getWeather() = getDataFromLocalSource()
+    fun getWeatherFromLocalSourceRus() = getDataFromLocalSource(true)
 
-    private fun getDataFromLocalSource() {// заглушка для получения погоды
+    fun getWeatherFromLocalSourceWorld() = getDataFromLocalSource(false)
+
+    private fun getDataFromLocalSource(isRussian: Boolean) {// получение погоды
         liveData.value = AppState.Loading
         Thread {
             Thread.sleep(1000)
@@ -32,7 +27,7 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
                 var error = false
                 countTry--
                 try {
-                    randomLoad()
+                    randomLoad(isRussian)
                 } catch (e: Exception) {
                     error = true
                 }
@@ -42,10 +37,17 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
         }.start()
     }
 
-    private fun randomLoad() {//случайное событие загрузки
+    private fun randomLoad(isRussian: Boolean) {//случайное событие загрузки
         val rnds = (0..1).random()
         when (rnds) {
-            0 -> liveData.postValue(AppState.Success(repository.getWeatherFromLocalStorage()))
+
+            0 -> liveData.postValue(
+                if (isRussian) {
+                    AppState.Success(repository.getWeatherFromLocalStorageRus())
+                } else {
+                    AppState.Success(repository.getWeatherFromLocalStorageWorld())
+                }
+            )
             1 -> liveData.postValue(AppState.Error(throw  Exception()))
         }
 
