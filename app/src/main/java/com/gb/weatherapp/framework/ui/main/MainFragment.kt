@@ -14,6 +14,7 @@ import com.gb.weatherapp.model.entities.Weather
 import com.google.android.material.snackbar.Snackbar
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import com.gb.weatherapp.BUNDLE_EXTRA
+import com.gb.weatherapp.framework.showSnackBar
 
 class MainFragment : Fragment() {
 
@@ -100,14 +101,14 @@ class MainFragment : Fragment() {
             }
             is AppState.Error -> {
                 mainFragmentLoadingLayout.visibility = View.GONE
-                Snackbar
-                    .make(
-                        binding.mainImageButton,
-                        getString(R.string.error),
-                        Snackbar.LENGTH_INDEFINITE
-                    )
-                    .setAction(getString(R.string.reload)) { viewModel.getWeatherFromLocalSourceRus() }
-                    .show()
+
+                mainImageButton.showSnackBar(
+                    getString(R.string.error),
+                    getString(R.string.reload)
+                ) {
+                    //функцию на вход в данном случае мы можем вынести за скобки
+                    viewModel.getWeatherFromLocalSourceRus()
+                }
             }
         }
     }
