@@ -14,10 +14,12 @@ import com.gb.weatherapp.model.entities.Weather
 import com.google.android.material.snackbar.Snackbar
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import com.gb.weatherapp.BUNDLE_EXTRA
+import com.gb.weatherapp.framework.showSnackBar
 
 class MainFragment : Fragment() {
 
-    private val viewModel: MainViewModel by viewModel() // потом иннициализируется в методе  viewModel()
+    private val viewModel: MainViewModel by viewModel()
+    // by - делегирование. Мы  делегируем создание  MainViewModel в методе  viewModel() coin
 
     /*
     Биндинг-класс содержит ссылку на корневой макет.
@@ -50,6 +52,7 @@ class MainFragment : Fragment() {
 
     //метод смены списка и картинки кнопки при выборе мировых/российских городов
     private fun changeWeatherDataSet() = with(binding) {
+        //функция расширения with() говорит о том что мы будем везти обьекта binding. Иначе пришлось бы писать  binding.viewModel.... и пр
         if (isDataSetRus) {
             viewModel.getWeatherFromLocalSourceWorld()
             mainImageButton.setImageResource(R.drawable.ic_earth)
@@ -70,8 +73,16 @@ class MainFragment : Fragment() {
                     override fun onItemViewClick(weather: Weather) { //передаем ему реакцию от слушателя на один из жлементов списка
                         val manager = activity?.supportFragmentManager
                         manager?.let { manager ->
+                            /*
+                            .let - функция расширения которая возвращает  результат переданной функции, передав в нее объект на котором она вызвана
+                            В частности здесь  функция возвращает объект уже проверенный на nullable.
+                            и в последствии с ним уже можно будет работатть как с не  nullable объектом
+                             */
                             val bundle = Bundle().apply {
-                                // apply - функция которая позволяет на уже созданном объекте сетить данные
+                                /*
+                                .apply - функция расширения которая позволяет на уже созданном объекте вызвать его методы без ссылки на сам объект
+                                Позволяет соеденить создание объекта с его инициализацией
+                                 */
                                 putParcelable(BUNDLE_EXTRA, weather)
                             }
                             manager.beginTransaction()
@@ -90,14 +101,14 @@ class MainFragment : Fragment() {
             }
             is AppState.Error -> {
                 mainFragmentLoadingLayout.visibility = View.GONE
-                Snackbar
-                    .make(
-                        binding.mainImageButton,
-                        getString(R.string.error),
-                        Snackbar.LENGTH_INDEFINITE
-                    )
-                    .setAction(getString(R.string.reload)) { viewModel.getWeatherFromLocalSourceRus() }
-                    .show()
+
+                mainImageButton.showSnackBar(
+                    getString(R.string.error),
+                    getString(R.string.reload)
+                ) {
+                    //функцию на вход в данном случае мы можем вынести за скобки
+                    viewModel.getWeatherFromLocalSourceRus()
+                }
             }
         }
     }
