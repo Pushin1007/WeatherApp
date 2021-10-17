@@ -12,12 +12,15 @@ import java.net.URL
 import java.util.stream.Collectors
 import javax.net.ssl.HttpsURLConnection
 import com.gb.weatherapp.BuildConfig
+import com.gb.weatherapp.READ_TIMEOUT
 
-object WeatherLoader {// класс загрузчик
+object WeatherLoader {
+    // класс загрузчик
     fun loadWeather(lat: Double, lon: Double): WeatherDTO? {
         try {
             //https запрос в котором мы отправляем данные о широте и долготе
-            val uri = URL("https://api.weather.yandex.ru/v2/informers?lat=${lat}&lon=${lon}&[lang=ru_RU]")
+            val uri =
+                URL("https://api.weather.yandex.ru/v2/informers?lat=${lat}&lon=${lon}&[lang=ru_RU]")
             lateinit var urlConnection: HttpsURLConnection // HttpsURLConnection класс который позволет подключиться к url
             try {
                 urlConnection =
@@ -25,10 +28,10 @@ object WeatherLoader {// класс загрузчик
                 urlConnection.requestMethod = "GET" // Сетим в него метод получения данных-- GET
                 urlConnection.addRequestProperty(
                     "X-Yandex-API-Key",
-                    BuildConfig.WEATHER_API_KEY
+                    BuildConfig.WEATHER_API_KEY //
                 )
 
-                urlConnection.readTimeout = 10000  //установка таймаута — 10 000 миллисекунд
+                urlConnection.readTimeout = READ_TIMEOUT  //установка таймаута — 10 000 миллисекунд
 
                 /*
                 читаем данные в поток.
@@ -49,18 +52,16 @@ object WeatherLoader {// класс загрузчик
                 return Gson().fromJson(lines, WeatherDTO::class.java)
             } catch (e: Exception) {
                 e.printStackTrace()
-                //Обработка ошибки
+
             } finally {
                 urlConnection.disconnect()// отключаемся от urlConnection
             }
         } catch (e: MalformedURLException) {
             e.printStackTrace()
-            //Обработка ошибки
+
         }
         return null
     }
-
-
 
 
     private fun getLinesForOld(reader: BufferedReader): String { // из всех данных которые получаем собираем в строку старым способом

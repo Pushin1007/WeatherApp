@@ -21,6 +21,27 @@ class DetailsFragment : Fragment() {
     private var _binding: DetailsFragmentBinding? = null
     private val binding get() = _binding!!  // Утверждаем что наше выражение не null и переопределяем метод  get()
     private val viewModel: DetailsViewModel by viewModel()
+    val conditionRus: HashMap<String, String> = hashMapOf(
+        "clear" to "ясно",
+        "partly-cloudy" to "малооблачно",
+        "cloudy" to "облачно с прояснениями",
+        "overcast" to "пасмурно",
+        "drizzle" to "морось",
+        "light-rain" to "небольшой дождь",
+        "rain" to "дождь",
+        "moderate-rain" to "умеренно сильный дождь",
+        "heavy-rain" to "сильный дождь",
+        "continuous-heavy-rain" to "длительный сильный дождь",
+        "showers" to "ливень",
+        "wet-snow" to "дождь со снегом",
+        "light-snow" to "небольшой снег",
+        "snow" to "снег",
+        "snow-showers" to "снегопад",
+        "hail" to "град",
+        "thunderstorm" to "гроза",
+        "thunderstorm-with-rain" to "дождь с грозой",
+        "thunderstorm-with-hail" to "гроза с градом"
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,7 +78,9 @@ class DetailsFragment : Fragment() {
                             mainView.visibility = View.VISIBLE
                             temperatureValue.text = appState.weatherData[0].temperature.toString()
                             feelsLikeValue.text = appState.weatherData[0].feelsLike.toString()
-                            weatherCondition.text = appState.weatherData[0].condition
+                            weatherCondition.text =
+                                conditionRus.getValue(appState.weatherData[0].condition.toString())
+
 
                         }
                         is AppState.Loading -> {
