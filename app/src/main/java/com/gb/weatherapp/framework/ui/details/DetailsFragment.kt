@@ -5,10 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.gb.weatherapp.AppState
 import com.gb.weatherapp.BUNDLE_EXTRA
 import com.gb.weatherapp.R
 import com.gb.weatherapp.model.entities.Weather
 import com.gb.weatherapp.databinding.DetailsFragmentBinding
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class DetailsFragment : Fragment() {
     /*
@@ -18,6 +20,7 @@ class DetailsFragment : Fragment() {
     */
     private var _binding: DetailsFragmentBinding? = null
     private val binding get() = _binding!!  // Утверждаем что наше выражение не null и переопределяем метод  get()
+    private val viewModel: DetailsViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,15 +43,35 @@ class DetailsFragment : Fragment() {
          иначе первая строчка выглядела бы такЖ
           binding.cityName.text = weatherData.city.city
 */
-                val city = it.city
-                cityName.text = city.city
+
+                cityName.text = it.city.city
                 cityCoordinates.text = String.format(
                     getString(R.string.city_coordinates),
-                    city.lat.toString(),
-                    city.lon.toString()
+                    it.city.lat.toString(),
+                    it.city.lon.toString()
                 )
-                temperatureValue.text = it.temperature.toString()
-                feelsLikeValue.text = it.feelsLike.toString()
+                viewModel.liveDataToObserve.observe(viewLifecycleOwner, { appState ->
+                    when (appState) {
+                        is AppState.Success -> {
+                            loadingLayout.visibility = View.GONE
+                            mainView.visibility = View.VISIBLE
+                            temperatureValue.text = appState.weatherData[0].temperature.toString()
+                            feelsLikeValue.text = appState.weatherData[0].feelsLike.toString()
+                            weatherCondition.text = appState.weatherData[0].condition
+
+                        }
+                        is AppState.Loading -> {
+                            mainView.visibility = View.INVISIBLE
+                            binding.loadingLayout.visibility = View.GONE
+                        }
+                        is AppState.Error -> {
+                            mainView.visibility = View.INVISIBLE
+                            loadingLayout.visibility = View.GONE
+                            errorTV.visibility = View.VISIBLE
+                        }
+                    }
+                })
+                viewModel.loadData(it.city.lat, it.city.lon)
             }
         }
     }

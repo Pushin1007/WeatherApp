@@ -1,5 +1,6 @@
 package com.gb.weatherapp.di
 
+import com.gb.weatherapp.framework.ui.details.DetailsViewModel
 import com.gb.weatherapp.framework.ui.main.MainViewModel
 import com.gb.weatherapp.model.repository.Repository
 import com.gb.weatherapp.model.repository.RepositoryImpl
@@ -13,4 +14,5 @@ val appModule = module {
     //View models
     // метод  (get() заставит обратиться коин и найти у своих модулей тип который нужно на вход во ViewModel
     viewModel { MainViewModel(get()) }
+    viewModel { DetailsViewModel(get()) }
 }

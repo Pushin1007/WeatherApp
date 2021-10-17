@@ -10,4 +10,6 @@
     <string name="change_cities_list">Поменять список</string>
     <string name="error">Ошибка!</string>
     <string name="reload">Обновить</string>
+    <string name="error_happened">Произошла ошибка</string>
+    <string name="weatherCondition">Облачно</string>
 </resources>
