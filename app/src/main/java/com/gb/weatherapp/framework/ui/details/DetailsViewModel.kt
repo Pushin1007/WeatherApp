@@ -15,6 +15,7 @@ class DetailsViewModel(private val repository: Repository) : ViewModel(), Lifecy
     fun loadData(lat: Double, lng: Double) {
         liveDataToObserve.value = AppState.Loading
         viewModelScope.launch(Dispatchers.IO) {// переделываем обычный поток на корутины
+            // viewModelScope интегрирован в ViewModel и его не нужно отменять
             val data = repository.getWeatherFromServer(lat, lng)// получаем наши данные
             // синхронизируемся с потоком UI  и сетим AppState.Success с нашими данными которые получены от сервера
             liveDataToObserve.postValue(AppState.Success(listOf(data)))
