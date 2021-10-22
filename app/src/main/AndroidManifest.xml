@@ -17,6 +17,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <receiver android:name=".model.receivers.MainBroadcastReceiver"
+            android:exported="true"
+            android:enabled="true">
+            <intent-filter>
+                //когда будет меняться временная зона
+                <action android:name="android.intent.action.TIMEZONE_CHANGED"/>
+            </intent-filter>
+        </receiver>
+
+
     </application>
 
 </manifest>
