@@ -2,7 +2,7 @@
 <resources>
     <dimen name="city_name_margin_top">50dp</dimen>
     <dimen name="cityName_value_text_size">35sp</dimen>
-    <dimen name="margin_15_dp">15dp</dimen>
+    <dimen name="margin_16_dp">16dp</dimen>
     <dimen name="margin_5_dp">5dp</dimen>
     <dimen name="temperature_value_text_size">40sp</dimen>
     <dimen name="feels_like_text_size">30sp</dimen>
@@ -10,4 +10,5 @@
     <dimen name="divider_height">1dp</dimen>
     <dimen name="fab_icon_size">56dp</dimen>
     <dimen name="image_button_size">75dp</dimen>
+    <dimen name="image_size_75">75dp</dimen>
 </resources>
