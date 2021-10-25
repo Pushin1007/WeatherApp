@@ -69,8 +69,8 @@ class DetailsFragment : Fragment() {
          иначе первая строчка выглядела бы так:
           binding.cityName.text = weatherData.city.city
 */
-                // сетим картинку
-                imageView.load(it.city.cityImage)
+
+                imageView.load(it.city.cityImage)// сетим картинку
                 cityName.text = it.city.cityName
                 cityCoordinates.text = String.format(
                     getString(R.string.city_coordinates),
