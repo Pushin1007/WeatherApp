@@ -1,7 +1,11 @@
 package com.gb.weatherapp.model
 
+import android.app.Activity
+import android.content.Context
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContentProviderCompat.requireContext
 
 import com.gb.weatherapp.model.rest_entities.WeatherDTO
 import com.google.gson.Gson
@@ -12,7 +16,9 @@ import java.net.URL
 import java.util.stream.Collectors
 import javax.net.ssl.HttpsURLConnection
 import com.gb.weatherapp.BuildConfig
+import com.gb.weatherapp.MainActivity
 import com.gb.weatherapp.READ_TIMEOUT
+import com.google.android.material.snackbar.Snackbar
 
 object WeatherLoader {
     // класс загрузчик
@@ -52,12 +58,17 @@ object WeatherLoader {
                 return Gson().fromJson(lines, WeatherDTO::class.java)
             } catch (e: Exception) {
                 e.printStackTrace()
+                // Toast.makeText(, "Невозможно получить данные от сервера", Toast.LENGTH_SHORT).show()
+                // тут нельзя это делать т.к. это не активити и не фрагмент.
+                // Как вывести сообщение на экран из этого кусочка кода?
+
 
             } finally {
                 urlConnection.disconnect()// отключаемся от urlConnection
             }
         } catch (e: MalformedURLException) {
             e.printStackTrace()
+//            Toast.makeText(, "Сервер погоды не отвечает", Toast.LENGTH_SHORT).show()
 
         }
         return null

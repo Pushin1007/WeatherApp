@@ -1,15 +1,18 @@
 package com.gb.weatherapp.framework.ui.details
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.gb.weatherapp.AppState
 import com.gb.weatherapp.BUNDLE_EXTRA
 import com.gb.weatherapp.R
-import com.gb.weatherapp.model.entities.Weather
 import com.gb.weatherapp.databinding.DetailsFragmentBinding
+import com.gb.weatherapp.framework.toast
+import com.gb.weatherapp.model.entities.Weather
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class DetailsFragment : Fragment() {
@@ -53,6 +56,8 @@ class DetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        context?.toast("Обновляем Свежие данные с сервера")//тут тост работает
+
         arguments?.getParcelable<Weather>(BUNDLE_EXTRA)?.let {
 /*
                  Забираем значения из аргументов, которые мы положили во фрагмент
@@ -61,7 +66,7 @@ class DetailsFragment : Fragment() {
             with(binding) { // сетим во вьюхи данные
 /*
         Выражение with(binding) позволяет упростить написние кода
-         иначе первая строчка выглядела бы такЖ
+         иначе первая строчка выглядела бы так:
           binding.cityName.text = weatherData.city.city
 */
 
@@ -80,8 +85,6 @@ class DetailsFragment : Fragment() {
                             feelsLikeValue.text = appState.weatherData[0].feelsLike.toString()
                             weatherCondition.text =
                                 conditionRus.getValue(appState.weatherData[0].condition.toString())
-
-
                         }
                         is AppState.Loading -> {
                             mainView.visibility = View.INVISIBLE
@@ -91,6 +94,7 @@ class DetailsFragment : Fragment() {
                             mainView.visibility = View.INVISIBLE
                             loadingLayout.visibility = View.GONE
                             errorTV.visibility = View.VISIBLE
+
                         }
                     }
                 })
