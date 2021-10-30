@@ -38,7 +38,7 @@ class MainFragmentAdapter(private val itemClickListener: MainFragment.OnItemView
         //  ViewHolder
         fun bind(weather: Weather) = with(binding) {
             mainFragmentRecyclerItemTextView.text =
-                weather.city.city //сетим текст во вьюху из  weather
+                weather.city.cityName //сетим текст во вьюху из  weather
             root.setOnClickListener { itemClickListener.onItemViewClick(weather) } // принажатии на корневую вьюху мы передадим погоду
         }
     }

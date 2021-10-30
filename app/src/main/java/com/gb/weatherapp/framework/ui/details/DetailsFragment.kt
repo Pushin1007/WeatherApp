@@ -1,12 +1,12 @@
 package com.gb.weatherapp.framework.ui.details
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
+import coil.load
+import coil.transform.GrayscaleTransformation
 import com.gb.weatherapp.AppState
 import com.gb.weatherapp.BUNDLE_EXTRA
 import com.gb.weatherapp.R
@@ -70,7 +70,8 @@ class DetailsFragment : Fragment() {
           binding.cityName.text = weatherData.city.city
 */
 
-                cityName.text = it.city.city
+                imageView.load(it.city.cityImage)// сетим картинку
+                cityName.text = it.city.cityName
                 cityCoordinates.text = String.format(
                     getString(R.string.city_coordinates),
                     it.city.lat.toString(),
@@ -101,6 +102,7 @@ class DetailsFragment : Fragment() {
                 viewModel.loadData(it.city.lat, it.city.lon)
             }
         }
+
     }
 
     override fun onDestroyView() {
