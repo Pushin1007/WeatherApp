@@ -95,7 +95,7 @@ class DetailsFragment : Fragment() {
                             mainView.visibility = View.INVISIBLE
                             loadingLayout.visibility = View.GONE
                             errorTV.visibility = View.VISIBLE
-
+                            context?.toast("Ошибка загрузки")
                         }
                     }
                 })
