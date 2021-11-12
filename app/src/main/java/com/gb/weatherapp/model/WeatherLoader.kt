@@ -22,7 +22,7 @@ import com.google.android.material.snackbar.Snackbar
 
 object WeatherLoader {
     // класс загрузчик
-    fun loadWeather(lat: Double, lon: Double): WeatherDTO? {
+    fun loadWeather(lat: Double, lon: Double, listener: WeatherLoaderErrorListener): WeatherDTO? {
         try {
             //https запрос в котором мы отправляем данные о широте и долготе
             val uri =
@@ -58,11 +58,13 @@ object WeatherLoader {
                 return Gson().fromJson(lines, WeatherDTO::class.java)
             } catch (e: Exception) {
                 e.printStackTrace()
+                listener.showError(e) //  показываем какия ошибка произошла
             } finally {
                 urlConnection.disconnect()// отключаемся от urlConnection
             }
         } catch (e: MalformedURLException) {
             e.printStackTrace()
+            listener.showError(e) //  показываем какия ошибка произошла
         }
         return null
     }
