@@ -27,7 +27,6 @@ class DetailsViewModel(private val repository: Repository) : ViewModel(), Lifecy
                 liveDataToObserve.postValue(AppState.Success(listOf(data)))
             }.start()
         }
-
     }
 
     override fun showError(throwable: Throwable) {

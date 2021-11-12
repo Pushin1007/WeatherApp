@@ -67,7 +67,7 @@ object WeatherLoader {
         return null
     }
 
-    interface WeatherLoaderErrorListener {
+    interface WeatherLoaderErrorListener { //интерфейс с одним методом показа  для показа ошибки
         fun showError(throwable: Throwable)
     }
 

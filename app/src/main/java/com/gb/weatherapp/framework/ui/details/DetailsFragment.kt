@@ -107,7 +107,7 @@ class DetailsFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null // обнуляем ссылку для на фрагмент
+        _binding = null // обнуляем ссылку  на фрагмент
     }
 
     companion object {
