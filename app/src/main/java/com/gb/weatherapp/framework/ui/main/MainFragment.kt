@@ -1,5 +1,6 @@
 package com.gb.weatherapp.framework.ui.main
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -14,6 +15,7 @@ import com.gb.weatherapp.model.entities.Weather
 import com.google.android.material.snackbar.Snackbar
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import com.gb.weatherapp.BUNDLE_EXTRA
+import com.gb.weatherapp.DATA_SET_KEY
 import com.gb.weatherapp.framework.showSnackBar
 
 class MainFragment : Fragment() {
@@ -47,11 +49,26 @@ class MainFragment : Fragment() {
             viewModel.getLiveData().observe(viewLifecycleOwner, { renderData(it) })
             viewModel.getWeatherFromLocalSourceRus()
         }
+        loadDataSet()
+        initDataSet()
     }
 
 
     //метод смены списка и картинки кнопки при выборе мировых/российских городов
     private fun changeWeatherDataSet() = with(binding) {
+        isDataSetRus = !isDataSetRus
+        initDataSet()
+    }
+
+    private fun loadDataSet() {// грузим значеие из настроек
+        activity?.let {
+            isDataSetRus = activity
+                ?.getPreferences(Context.MODE_PRIVATE)
+                ?.getBoolean(DATA_SET_KEY, true) ?: true// значение по дефолту
+        }
+    }
+
+    private fun initDataSet() = with(binding) {// сетим значение в настройки и сохранем
         //функция расширения with() говорит о том что мы будем везти обьекта binding. Иначе пришлось бы писать  binding.viewModel.... и пр
         if (isDataSetRus) {
             viewModel.getWeatherFromLocalSourceWorld()
@@ -60,7 +77,14 @@ class MainFragment : Fragment() {
             viewModel.getWeatherFromLocalSourceRus()
             mainImageButton.setImageResource(R.drawable.ic_russia)
         }
-        isDataSetRus = !isDataSetRus
+        saveDataSetToDisk()
+    }
+
+    private fun saveDataSetToDisk() { // метод сохранения настроек
+        val editor = activity?.getPreferences(Context.MODE_PRIVATE)?.edit() // открываем для записи
+        editor?.putBoolean(DATA_SET_KEY, isDataSetRus) //кладем наше значение по ключу
+        editor?.apply()
+
     }
 
 
