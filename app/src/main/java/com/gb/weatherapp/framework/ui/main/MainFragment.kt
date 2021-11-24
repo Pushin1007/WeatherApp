@@ -60,7 +60,7 @@ class MainFragment : Fragment() {
         initDataSet()
     }
 
-    private fun loadDataSet() {// грузим значеие из настроек
+    private fun loadDataSet() { // грузим значеие из настроек какой список выводить
         activity?.let {
             isDataSetRus = activity
                 ?.getPreferences(Context.MODE_PRIVATE)
