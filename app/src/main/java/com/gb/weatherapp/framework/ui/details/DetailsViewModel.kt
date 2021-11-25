@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gb.weatherapp.AppState
 import com.gb.weatherapp.model.WeatherLoader
+import com.gb.weatherapp.model.entities.City
 import com.gb.weatherapp.model.repository.Repository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -15,12 +16,14 @@ class DetailsViewModel(private val repository: Repository) : ViewModel(), Lifecy
     WeatherLoader.WeatherLoaderErrorListener {
     val liveDataToObserve: MutableLiveData<AppState> = MutableLiveData()
 
-    fun loadData(lat: Double, lng: Double) {
+    fun loadData(city: City) {
         liveDataToObserve.value = AppState.Loading
 
         viewModelScope.launch(Dispatchers.IO) {// переделываем обычный поток на корутины
             // viewModelScope интегрирован в ViewModel и его не нужно отменять
-            val data = repository.getWeatherFromServer(lat, lng, this@DetailsViewModel)
+            val data = repository.getWeatherFromServer(city.lat, city.lon, this@DetailsViewModel)
+            data?.city = city
+            data?.let { repository.saveEntity(it) }
             // получаем наши данные
             // синхронизируемся с потоком UI  и сетим AppState.Success с нашими данными которые получены от сервера
             if (data != null) {

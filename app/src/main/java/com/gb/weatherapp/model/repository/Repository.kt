@@ -8,6 +8,6 @@ interface Repository {
     fun getWeatherFromServer(lat: Double,lng: Double, listener: WeatherLoader.WeatherLoaderErrorListener): Weather?
     fun getWeatherFromLocalStorageRus(): List<Weather>
     fun getWeatherFromLocalStorageWorld(): List<Weather>
-    fun saveEntity(weather: Weather)
+    fun saveEntity(weather: Weather) // сохранение запроса
     fun getAllHistory(): List<Weather> //метод возвращающий все истории запросов
 }

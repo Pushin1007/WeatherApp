@@ -41,7 +41,7 @@ class RepositoryImpl : Repository {
 
     private fun convertHistoryEntityToWeather(entityList: List<HistoryEntity>): List<Weather> { //Конвертер  HistoryEntity в List<Weather>
         return entityList.map {
-            Weather(City(it.city, R.drawable.moskva, 0.0, 0.0), it.temperature, 0, it.condition)
+            Weather(City(it.city, 0, 0.0, 0.0), it.temperature, 0, it.condition)
         }
     }
 

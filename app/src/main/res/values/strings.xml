@@ -12,4 +12,6 @@
     <string name="reload">Обновить</string>
     <string name="error_happened">Произошла ошибка</string>
     <string name="weatherCondition">Облачно</string>
+    <string name="default_item_view">Moscow 15C</string>
+    <string name="history">История</string>
 </resources>
