@@ -14,4 +14,6 @@
     <string name="weatherCondition">Облачно</string>
     <string name="default_item_view">Moscow 15C</string>
     <string name="history">История</string>
+    <string name="content_provider">Контакты</string>
+    <string name="need_permissions_to_read_contacts">Требуется предоставить разрешение на чтение контактов</string>
 </resources>
