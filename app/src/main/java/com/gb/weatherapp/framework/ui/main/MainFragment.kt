@@ -4,6 +4,9 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
+import android.location.Geocoder
+import android.location.Location
+import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -12,6 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import com.gb.weatherapp.AppState
 import com.gb.weatherapp.R
@@ -24,8 +28,14 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import com.gb.weatherapp.BUNDLE_EXTRA
 import com.gb.weatherapp.DATA_SET_KEY
 import com.gb.weatherapp.framework.showSnackBar
+import com.gb.weatherapp.model.entities.City
 
-class MainFragment : Fragment() {
+import kotlinx.coroutines.*
+
+import java.io.IOException
+
+
+class MainFragment : Fragment(), CoroutineScope by MainScope() {
 
     private val viewModel: MainViewModel by viewModel()
     // by - делегирование. Мы  делегируем создание  MainViewModel в методе  viewModel() coin
@@ -40,6 +50,7 @@ class MainFragment : Fragment() {
     private var adapter: MainFragmentAdapter? = null //Адаптер для RecyclerView
     private var isDataSetRus: Boolean = true //первоначальная загрузка российских городов
 
+
     private val permissionResult = //метод проверки есть ли разрешение на геолокацию
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { result ->
             if (result) {
@@ -53,6 +64,15 @@ class MainFragment : Fragment() {
             }
         }
 
+    private val onLocationListener = object : LocationListener {
+        override fun onLocationChanged(location: Location) {
+            getAddressAsync(location)
+        }
+
+        override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
+        override fun onProviderEnabled(provider: String) {}
+        override fun onProviderDisabled(provider: String) {}
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -103,7 +123,8 @@ class MainFragment : Fragment() {
     }
 
     private fun saveDataSetToDisk() { // метод сохранения настроек
-        val editor = activity?.getPreferences(Context.MODE_PRIVATE)?.edit() // открываем для записи
+        val editor =
+            activity?.getPreferences(Context.MODE_PRIVATE)?.edit() // открываем для записи
         editor?.putBoolean(DATA_SET_KEY, isDataSetRus) //кладем наше значение по ключу
         editor?.apply()
 
@@ -114,28 +135,31 @@ class MainFragment : Fragment() {
             when (PackageManager.PERMISSION_GRANTED) {
                 ContextCompat.checkSelfPermission(
                     notNullContext,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
+                    Manifest.permission.ACCESS_FINE_LOCATION
                 ) -> {
                     //Доступ к местоположению на телефоне есть
                     getLocation()
                 }
                 else -> {
                     //Иначе запрашиваем разрешение
-                    permissionResult.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
+                    permissionResult.launch(Manifest.permission.ACCESS_FINE_LOCATION)
                 }
             }
         }
     }
-    @SuppressLint("MissingPermission")
+
+    @SuppressLint("MissingPermission")   //Указываем, что Lint должен игнорировать указанные предупреждения
     private fun getLocation() { //запрашиваем наше местоположение и показываем нашу погоду
         activity?.let { context ->
             // Получить менеджер геолокаций
-            val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            val locationManager =
+                context.getSystemService(Context.LOCATION_SERVICE) as LocationManager // С помощью этого менеджера мы можем запрашивать наше местоположение
 
             if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                 val provider = locationManager.getProvider(LocationManager.GPS_PROVIDER)
                 provider?.let {
                     // Будем получать геоположение через каждые 60 секунд или каждые 100 метров
+                    // подписка на текущее местоположение
                     locationManager.requestLocationUpdates(
                         LocationManager.GPS_PROVIDER,
                         1000,
@@ -144,7 +168,8 @@ class MainFragment : Fragment() {
                     )
                 }
             } else {
-                val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                val location =
+                    locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
                 if (location == null) {
                     Toast.makeText(
                         requireContext(),
@@ -159,36 +184,90 @@ class MainFragment : Fragment() {
     }
 
 
+    private fun getAddressAsync(location: Location) = with(binding) {
+        val geoCoder = Geocoder(context) //получаем местоположение с помощью корутин
+        launch(Dispatchers.IO) {
+            try {
+                val addresses = geoCoder.getFromLocation(
+                    location.latitude,
+                    location.longitude,
+                    1 //максимальное количество результатов
+                )
+                withContext(Dispatchers.Main) { //переводим поток
+                    showAddressDialog(addresses[0].subAdminArea, location)
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+
+    private fun showAddressDialog(address: String, location: Location) {// показываем адресс
+        activity?.let {
+            AlertDialog.Builder(it)
+                .setTitle(getString(R.string.dialog_address_title))
+                .setMessage(address)
+                .setPositiveButton(getString(R.string.dialog_address_get_weather)) { _, _ ->
+                    openDetailsFragment(
+                        Weather(
+                            City(
+                                address, R.drawable.moskva,
+                                location.latitude,
+                                location.longitude
+                            )
+                        )
+                    )
+                }
+                .setNegativeButton(getString(R.string.dialog_button_close)) { dialog, _ -> dialog.dismiss() }
+                .create()
+                .show()
+        }
+    }
+
+    private fun openDetailsFragment(weather: Weather) {
+        activity?.supportFragmentManager?.let { manager ->
+            val bundle = Bundle().apply {
+                putParcelable(BUNDLE_EXTRA, weather)
+            }
+            manager.beginTransaction()
+                .add(R.id.container, DetailsFragment.newInstance(bundle))
+                .addToBackStack("")
+                .commitAllowingStateLoss()
+        }
+    }
+
     private fun renderData(appState: AppState) = with(binding) {
         //этот метод будет вызываться когда мы будем получать какой-то ивент от наших подписок
         when (appState) {
             is AppState.Success -> { //если загрузка прошла ОК
                 mainFragmentLoadingLayout.visibility = View.GONE //скрываем виджет загрузки
-                adapter = MainFragmentAdapter(object : OnItemViewClickListener { //создаем адаптер
-                    override fun onItemViewClick(weather: Weather) { //передаем ему реакцию от слушателя на один из жлементов списка
-                        val manager = activity?.supportFragmentManager
-                        manager?.let { manager ->
-                            /*
-                            .let - функция расширения которая возвращает  результат переданной функции, передав в нее объект на котором она вызвана
-                            В частности здесь  функция возвращает объект уже проверенный на nullable.
-                            и в последствии с ним уже можно будет работатть как с не  nullable объектом
-                             */
-                            val bundle = Bundle().apply {
+                adapter =
+                    MainFragmentAdapter(object : OnItemViewClickListener { //создаем адаптер
+                        override fun onItemViewClick(weather: Weather) { //передаем ему реакцию от слушателя на один из жлементов списка
+                            val manager = activity?.supportFragmentManager
+                            manager?.let { manager ->
                                 /*
-                                .apply - функция расширения которая позволяет на уже созданном объекте вызвать его методы без ссылки на сам объект
-                                Позволяет соеденить создание объекта с его инициализацией
+                                .let - функция расширения которая возвращает  результат переданной функции, передав в нее объект на котором она вызвана
+                                В частности здесь  функция возвращает объект уже проверенный на nullable.
+                                и в последствии с ним уже можно будет работатть как с не  nullable объектом
                                  */
-                                putParcelable(BUNDLE_EXTRA, weather)
+                                val bundle = Bundle().apply {
+                                    /*
+                                    .apply - функция расширения которая позволяет на уже созданном объекте вызвать его методы без ссылки на сам объект
+                                    Позволяет соеденить создание объекта с его инициализацией
+                                     */
+                                    putParcelable(BUNDLE_EXTRA, weather)
+                                }
+                                manager.beginTransaction()
+                                    .add(R.id.container, DetailsFragment.newInstance(bundle))
+                                    .addToBackStack("")
+                                    .commitAllowingStateLoss()
                             }
-                            manager.beginTransaction()
-                                .add(R.id.container, DetailsFragment.newInstance(bundle))
-                                .addToBackStack("")
-                                .commitAllowingStateLoss()
                         }
+                    }).apply {
+                        setWeather(appState.weatherData)
                     }
-                }).apply {
-                    setWeather(appState.weatherData)
-                }
                 mainFragmentRecyclerView.adapter = adapter
             }
             is AppState.Loading -> {  //если идет загрузка то просто  показываем виджет загрузки
@@ -223,3 +302,5 @@ class MainFragment : Fragment() {
         fun newInstance() = MainFragment()
     }
 }
+
+

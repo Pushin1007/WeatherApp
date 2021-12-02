@@ -18,4 +18,9 @@
     <string name="need_permissions_to_read_contacts">Требуется предоставить разрешение на чтение контактов</string>
     <string name="mainImageLocation_description">Мое местоположение</string>
     <string name="dialog_message_no_gps">Разрешите доступ к геолокации, для определения погоды в Вашем городе</string>
+    <string name="looks_like_location_disabled">Определение местоположения выключено</string>
+    <string name="dialog_address_title">Ваш адрес</string>
+    <string name="dialog_address_get_weather">Узнать погоду</string>
+    <string name="dialog_button_close">Закрыть</string>
+
 </resources>
