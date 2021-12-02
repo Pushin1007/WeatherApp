@@ -34,6 +34,7 @@ class ContactsFragment : Fragment() {
             }
         }
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -98,7 +99,7 @@ class ContactsFragment : Fragment() {
 //                        val number =
 //                            cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
 
-                        addView( name)
+                        addView(name)
 //                        addView( name + " "  + number)
                     }
                 }

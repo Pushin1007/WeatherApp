@@ -16,4 +16,6 @@
     <string name="history">История</string>
     <string name="content_provider">Контакты</string>
     <string name="need_permissions_to_read_contacts">Требуется предоставить разрешение на чтение контактов</string>
+    <string name="mainImageLocation_description">Мое местоположение</string>
+    <string name="dialog_message_no_gps">Разрешите доступ к геолокации, для определения погоды в Вашем городе</string>
 </resources>

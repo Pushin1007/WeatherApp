@@ -15,12 +15,26 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/mainImageLocation"
+        android:layout_width="@dimen/image_button_size"
+        android:layout_height="@dimen/image_button_size"
+        app:layout_constraintStart_toStartOf="@id/mainImageButton"
+        app:layout_constraintBottom_toTopOf="@id/mainImageButton"
+        app:backgroundTint="@android:color/transparent"
+        android:src="@drawable/my_location"
+        android:scaleType="centerInside"
+        android:contentDescription="@string/mainImageLocation_description"
+        android:clickable="true"
+        android:layout_marginEnd="@dimen/margin_16_dp"/>
+
+    <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/mainImageButton"
         android:layout_width="@dimen/image_button_size"
         android:layout_height="@dimen/image_button_size"
         android:layout_marginEnd="@dimen/margin_16_dp"
         android:layout_marginBottom="@dimen/margin_16_dp"
         android:backgroundTint="@color/white"
+        app:backgroundTint="@android:color/transparent"
         android:clickable="true"
         android:contentDescription="@string/change_cities_list"
         android:scaleType="centerInside"
