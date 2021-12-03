@@ -132,11 +132,14 @@ class MapsFragment : Fragment(), CoroutineScope by MainScope() {
         }
     }
 
-    private fun goToAddress(addresses: MutableList<Address>, searchText: String) { //переход к найденному адресу
+    private fun goToAddress(
+        addresses: MutableList<Address>,
+        searchText: String
+    ) { //переход к найденному адресу
         launch {
             val location = LatLng(addresses[0].latitude, addresses[0].longitude)
             setMarker(location, searchText)
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15f))
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15f))// зуммируем к адресу
         }
     }
 
@@ -154,7 +157,10 @@ class MapsFragment : Fragment(), CoroutineScope by MainScope() {
         }
     }
 
-    private fun setMarker(location: LatLng, searchText: String) { //ставим новый маркер при длительном нажатии
+    private fun setMarker(
+        location: LatLng,
+        searchText: String
+    ) { //ставим новый маркер при длительном нажатии
         map.addMarker(
             MarkerOptions()
                 .position(location)
