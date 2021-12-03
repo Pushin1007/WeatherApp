@@ -6,9 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import coil.load
-import coil.transform.GrayscaleTransformation
 import com.gb.weatherapp.AppState
 import com.gb.weatherapp.BUNDLE_EXTRA
+import com.gb.weatherapp.DEFAULF_CONDITION
 import com.gb.weatherapp.R
 import com.gb.weatherapp.databinding.DetailsFragmentBinding
 import com.gb.weatherapp.framework.toast
@@ -84,8 +84,12 @@ class DetailsFragment : Fragment() {
                             mainView.visibility = View.VISIBLE
                             temperatureValue.text = appState.weatherData[0].temperature.toString()
                             feelsLikeValue.text = appState.weatherData[0].feelsLike.toString()
-                            weatherCondition.text =
+                            weatherCondition.text = if (appState.weatherData[0].condition == null) {
+                                DEFAULF_CONDITION
+                            } else {
                                 conditionRus.getValue(appState.weatherData[0].condition.toString())
+                            }
+
                         }
                         is AppState.Loading -> {
                             mainView.visibility = View.INVISIBLE
@@ -95,11 +99,11 @@ class DetailsFragment : Fragment() {
                             mainView.visibility = View.INVISIBLE
                             loadingLayout.visibility = View.GONE
                             errorTV.visibility = View.VISIBLE
-
+                            context?.toast("Ошибка загрузки")
                         }
                     }
                 })
-                viewModel.loadData(it.city.lat, it.city.lon)
+                viewModel.loadData(it.city)
             }
         }
 
@@ -107,7 +111,7 @@ class DetailsFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null // обнуляем ссылку для на фрагмент
+        _binding = null // обнуляем ссылку  на фрагмент
     }
 
     companion object {

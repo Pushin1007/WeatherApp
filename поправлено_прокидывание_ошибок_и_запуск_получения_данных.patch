@@ -1,0 +1,166 @@
+Index: app/src/main/java/com/gb/weatherapp/framework/ui/details/DetailsFragment.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/gb/weatherapp/framework/ui/details/DetailsFragment.kt b/app/src/main/java/com/gb/weatherapp/framework/ui/details/DetailsFragment.kt
+--- a/app/src/main/java/com/gb/weatherapp/framework/ui/details/DetailsFragment.kt	(revision 6d1887381aee28bf2fed399dacc195f906404b04)
++++ b/app/src/main/java/com/gb/weatherapp/framework/ui/details/DetailsFragment.kt	(date 1636709541267)
+@@ -6,9 +6,9 @@
+ import android.view.ViewGroup
+ import androidx.fragment.app.Fragment
+ import coil.load
+-import coil.transform.GrayscaleTransformation
+ import com.gb.weatherapp.AppState
+ import com.gb.weatherapp.BUNDLE_EXTRA
++import com.gb.weatherapp.DEFAULF_CONDITION
+ import com.gb.weatherapp.R
+ import com.gb.weatherapp.databinding.DetailsFragmentBinding
+ import com.gb.weatherapp.framework.toast
+@@ -84,8 +84,12 @@
+                             mainView.visibility = View.VISIBLE
+                             temperatureValue.text = appState.weatherData[0].temperature.toString()
+                             feelsLikeValue.text = appState.weatherData[0].feelsLike.toString()
+-                            weatherCondition.text =
++                            weatherCondition.text = if (appState.weatherData[0].condition == null) {
++                                DEFAULF_CONDITION
++                            } else {
+                                 conditionRus.getValue(appState.weatherData[0].condition.toString())
++                            }
++
+                         }
+                         is AppState.Loading -> {
+                             mainView.visibility = View.INVISIBLE
+Index: app/src/main/java/com/gb/weatherapp/framework/ui/details/DetailsViewModel.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/gb/weatherapp/framework/ui/details/DetailsViewModel.kt b/app/src/main/java/com/gb/weatherapp/framework/ui/details/DetailsViewModel.kt
+--- a/app/src/main/java/com/gb/weatherapp/framework/ui/details/DetailsViewModel.kt	(revision 6d1887381aee28bf2fed399dacc195f906404b04)
++++ b/app/src/main/java/com/gb/weatherapp/framework/ui/details/DetailsViewModel.kt	(date 1636709793229)
+@@ -18,20 +18,24 @@
+     fun loadData(lat: Double, lng: Double) {
+         liveDataToObserve.value = AppState.Loading
+ 
+-        Thread { //зачем тут отдельный поток?
++        //Thread { //зачем тут отдельный поток?
+             viewModelScope.launch(Dispatchers.IO) {// переделываем обычный поток на корутины
+                 // viewModelScope интегрирован в ViewModel и его не нужно отменять
+-                val data = repository.getWeatherFromServer(lat, lng, this) // Почему тут this? в методе getWeatherFromServer контекста нет?
++                val data = repository.getWeatherFromServer(lat, lng, this@DetailsViewModel) // Почему тут this? в методе getWeatherFromServer контекста нет?
+                 // получаем наши данные
+                 // синхронизируемся с потоком UI  и сетим AppState.Success с нашими данными которые получены от сервера
+-                liveDataToObserve.postValue(AppState.Success(listOf(data)))
+-            }.start()
+-        }
++                if( data != null ) {
++
++                    liveDataToObserve.postValue(AppState.Success(listOf(data)))
++                }
++            }
++                //.start()
++        //}
+ 
+     }
+ 
+     override fun showError(throwable: Throwable) {
+-        liveDataToObserve.postValue(AppState.Error(error))// непонятно что тут надо передать??
++        liveDataToObserve.postValue(AppState.Error(throwable))// непонятно что тут надо передать??
+     }
+ }
+ 
+Index: app/src/main/java/com/gb/weatherapp/model/repository/Repository.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/gb/weatherapp/model/repository/Repository.kt b/app/src/main/java/com/gb/weatherapp/model/repository/Repository.kt
+--- a/app/src/main/java/com/gb/weatherapp/model/repository/Repository.kt	(revision 6d1887381aee28bf2fed399dacc195f906404b04)
++++ b/app/src/main/java/com/gb/weatherapp/model/repository/Repository.kt	(date 1636709793235)
+@@ -1,10 +1,11 @@
+ package com.gb.weatherapp.model.repository
+ 
++import com.gb.weatherapp.model.WeatherLoader
+ import com.gb.weatherapp.model.entities.Weather
+ 
+ interface Repository {
+     //два метода: забор погоды с сервера и забор погоды из локального хранилища
+-    fun getWeatherFromServer(lat: Double,lng: Double): Weather
++    fun getWeatherFromServer(lat: Double,lng: Double, listener: WeatherLoader.WeatherLoaderErrorListener): Weather?
+     fun getWeatherFromLocalStorageRus(): List<Weather>
+     fun getWeatherFromLocalStorageWorld(): List<Weather>
+ }
+\ No newline at end of file
+Index: app/src/main/java/com/gb/weatherapp/model/repository/RepositoryImpl.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/gb/weatherapp/model/repository/RepositoryImpl.kt b/app/src/main/java/com/gb/weatherapp/model/repository/RepositoryImpl.kt
+--- a/app/src/main/java/com/gb/weatherapp/model/repository/RepositoryImpl.kt	(revision 6d1887381aee28bf2fed399dacc195f906404b04)
++++ b/app/src/main/java/com/gb/weatherapp/model/repository/RepositoryImpl.kt	(date 1636709793231)
+@@ -3,19 +3,24 @@
+ import com.gb.weatherapp.model.WeatherLoader
+ import com.gb.weatherapp.model.entities.City
+ import com.gb.weatherapp.model.entities.Weather
+-import com.gb.weatherapp.model.rest.WeatherRepo
+ 
+ 
+ class RepositoryImpl : Repository {
+ 
+-    override fun getWeatherFromServer(lat: Double, lng: Double): Weather {
+-//        val dto = WeatherLoader.loadWeather(lat, lng) //грузим погоду с сервера
++    override fun getWeatherFromServer(
++        lat: Double,
++        lng: Double,
++        listener: WeatherLoader.WeatherLoaderErrorListener
++    ): Weather? {
++        val dto = WeatherLoader.loadWeather(lat, lng, listener) //грузим погоду с сервера
+         //грузим погоду в нужном нам потоке (синхронный запрос) с сервера с помощью retrofit
+-        val dto = WeatherRepo.api.getWeather(lat, lng).execute().body()
+-        return Weather(
+-            temperature = dto?.fact?.temp ?: 0,
+-            feelsLike = dto?.fact?.feelsLike ?: 0,
+-            condition = dto?.fact?.condition
++        //val dto = WeatherRepo.api.getWeather(lat, lng).execute().body()
++        return if (dto == null) {
++            null
++        } else Weather(
++            temperature = dto.fact.temp ?: 0,
++            feelsLike = dto.fact.feelsLike ?: 0,
++            condition = dto.fact.condition
+         )
+     }
+ 
+Index: app/src/main/java/com/gb/weatherapp/model/WeatherLoader.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/gb/weatherapp/model/WeatherLoader.kt b/app/src/main/java/com/gb/weatherapp/model/WeatherLoader.kt
+--- a/app/src/main/java/com/gb/weatherapp/model/WeatherLoader.kt	(revision 6d1887381aee28bf2fed399dacc195f906404b04)
++++ b/app/src/main/java/com/gb/weatherapp/model/WeatherLoader.kt	(date 1636708849376)
+@@ -22,7 +22,7 @@
+ 
+ object WeatherLoader {
+     // класс загрузчик
+-    fun loadWeather(lat: Double, lon: Double): WeatherDTO? {
++    fun loadWeather(lat: Double, lon: Double, listener: WeatherLoaderErrorListener): WeatherDTO? {
+         try {
+             //https запрос в котором мы отправляем данные о широте и долготе
+             val uri =
+@@ -58,11 +58,13 @@
+                 return Gson().fromJson(lines, WeatherDTO::class.java)
+             } catch (e: Exception) {
+                 e.printStackTrace()
++                listener.showError(e)
+             } finally {
+                 urlConnection.disconnect()// отключаемся от urlConnection
+             }
+         } catch (e: MalformedURLException) {
+             e.printStackTrace()
++            listener.showError(e)
+         }
+         return null
+     }

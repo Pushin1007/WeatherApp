@@ -1,0 +1,1 @@
+yandex_weather_api_key="11c5b636-ec67-4718-9f20-07f4af9fdee3"

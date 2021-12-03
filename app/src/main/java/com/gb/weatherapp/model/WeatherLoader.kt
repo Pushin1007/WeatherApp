@@ -22,7 +22,7 @@ import com.google.android.material.snackbar.Snackbar
 
 object WeatherLoader {
     // класс загрузчик
-    fun loadWeather(lat: Double, lon: Double): WeatherDTO? {
+    fun loadWeather(lat: Double, lon: Double, listener: WeatherLoaderErrorListener): WeatherDTO? {
         try {
             //https запрос в котором мы отправляем данные о широте и долготе
             val uri =
@@ -58,22 +58,20 @@ object WeatherLoader {
                 return Gson().fromJson(lines, WeatherDTO::class.java)
             } catch (e: Exception) {
                 e.printStackTrace()
-                // Toast.makeText(, "Невозможно получить данные от сервера", Toast.LENGTH_SHORT).show()
-                // тут нельзя это делать т.к. это не активити и не фрагмент.
-                // Как вывести сообщение на экран из этого кусочка кода?
-
-
+                listener.showError(e) //  показываем какия ошибка произошла
             } finally {
                 urlConnection.disconnect()// отключаемся от urlConnection
             }
         } catch (e: MalformedURLException) {
             e.printStackTrace()
-//            Toast.makeText(, "Сервер погоды не отвечает", Toast.LENGTH_SHORT).show()
-
+            listener.showError(e) //  показываем какия ошибка произошла
         }
         return null
     }
 
+    interface WeatherLoaderErrorListener { //интерфейс с одним методом показа  для показа ошибки
+        fun showError(throwable: Throwable)
+    }
 
     private fun getLinesForOld(reader: BufferedReader): String { // из всех данных которые получаем собираем в строку старым способом
         val rawData = StringBuilder(1024) //емкость строчки
