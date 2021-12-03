@@ -1,4 +1,6 @@
 <resources>
+
+    <string translatable="false" name="google_maps_key">AIzaSyABkClgQ_cpm7UlwMrPfsuwL15C-rI7u7Q</string>
     <string name="app_name">WeatherApp</string>
     <string name="city">Москва</string>
     <string name="cityCoordinates">lt/ln: 55.755826, 37.617299900000035</string>
@@ -22,5 +24,14 @@
     <string name="dialog_address_title">Ваш адрес</string>
     <string name="dialog_address_get_weather">Узнать погоду</string>
     <string name="dialog_button_close">Закрыть</string>
-
+    <string name="start_marker">Старт</string>
+    <string name="map">Карта</string>
+    <string name="map_mode">Режим карты</string>
+    <string name="normal">Нормальный</string>
+    <string name="satellites">Спутники</string>
+    <string name="terrain">Схема</string>
+    <string name="traffic">Трафик</string>
+    <string name="enter_query">Введите запрос</string>
+    <string name="search">Поиск</string>
+    <string name="red_squere">Москва, Красная площадь 1</string>
 </resources>
