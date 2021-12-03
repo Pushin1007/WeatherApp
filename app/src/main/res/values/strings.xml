@@ -1,6 +1,5 @@
 <resources>
 
-    <string translatable="false" name="google_maps_key">AIzaSyABkClgQ_cpm7UlwMrPfsuwL15C-rI7u7Q</string>
     <string name="app_name">WeatherApp</string>
     <string name="city">Москва</string>
     <string name="cityCoordinates">lt/ln: 55.755826, 37.617299900000035</string>
