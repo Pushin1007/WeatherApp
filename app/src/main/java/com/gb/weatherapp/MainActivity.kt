@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.gb.weatherapp.framework.ui.contacts.ContactsFragment
 import com.gb.weatherapp.framework.ui.history.HistoryFragment
@@ -20,6 +21,8 @@ class MainActivity : AppCompatActivity() {
                 .replace(R.id.container, MainFragment.newInstance())
                 .commitNow()
         }
+        val ticketId = intent.extras?.getString(ticketIdKey, "no value") ?: "no value"
+        Toast.makeText(applicationContext, ticketId, Toast.LENGTH_SHORT).show()
     }
 
 
