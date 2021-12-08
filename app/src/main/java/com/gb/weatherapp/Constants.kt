@@ -7,5 +7,9 @@ const val DEFAULF_CONDITION = "Неизвестно" //значение осад
 const val TIMEOUT10С = 10L// тайм аут равный 10 в LONG
 const val DATA_SET_KEY = "DATA_SET_KEY" // ключ для значения выбора списка городов
 const val DB_NAME = "add_database.db" // название базы данных
-
+const val CUSTOM_FIELD = "custom"
+const val TAG = "Pushes"
+const val ticketIdKey = "ticketId" // ключ для пуша
+const val PUSH_KEY_TITLE = "title" // Ключ для заготовока пуша
+const val PUSH_KEY_MESSAGE = "message" // Ключ для тела пуша
 
