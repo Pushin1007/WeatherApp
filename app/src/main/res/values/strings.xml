@@ -1,4 +1,5 @@
 <resources>
+
     <string name="app_name">WeatherApp</string>
     <string name="city">Москва</string>
     <string name="cityCoordinates">lt/ln: 55.755826, 37.617299900000035</string>
@@ -16,4 +17,20 @@
     <string name="history">История</string>
     <string name="content_provider">Контакты</string>
     <string name="need_permissions_to_read_contacts">Требуется предоставить разрешение на чтение контактов</string>
+    <string name="mainImageLocation_description">Мое местоположение</string>
+    <string name="dialog_message_no_gps">Разрешите доступ к геолокации, для определения погоды в Вашем городе</string>
+    <string name="looks_like_location_disabled">Определение местоположения выключено</string>
+    <string name="dialog_address_title">Ваш адрес</string>
+    <string name="dialog_address_get_weather">Узнать погоду</string>
+    <string name="dialog_button_close">Закрыть</string>
+    <string name="start_marker">Старт</string>
+    <string name="map">Карта</string>
+    <string name="map_mode">Режим карты</string>
+    <string name="normal">Нормальный</string>
+    <string name="satellites">Спутники</string>
+    <string name="terrain">Схема</string>
+    <string name="traffic">Трафик</string>
+    <string name="enter_query">Введите запрос</string>
+    <string name="search">Поиск</string>
+    <string name="red_squere">Москва, Красная площадь 1</string>
 </resources>
