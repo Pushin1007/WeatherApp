@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.fragment.app.Fragment
+import com.gb.weatherapp.framework.ui.contacts.ContactsFragment
 import com.gb.weatherapp.framework.ui.history.HistoryFragment
 import com.gb.weatherapp.framework.ui.main.MainFragment
 
@@ -32,11 +33,15 @@ class MainActivity : AppCompatActivity() {
                 openFragment(HistoryFragment.newInstance())
                 true
             }
+            R.id.menu_contacts -> {
+                openFragment(ContactsFragment.newInstance())
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
-    private fun openFragment(fragment: Fragment) {
+    private fun openFragment(fragment: Fragment) { // метод открытия врагмента для исключения дублирования кода
         supportFragmentManager.apply {
             beginTransaction()
                 .add(R.id.container, fragment)
